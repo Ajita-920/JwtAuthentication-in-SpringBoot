@@ -9,7 +9,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import lombok.*;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -21,21 +24,32 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String firstname;
     private String lastname;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private String password;
 
-    @Enumerated(EnumType.ORDINAL)//be default 0,1,2
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+//        System.out.println(role);
+//        System.out.println(role.getPermissions());
+        List<SimpleGrantedAuthority> authorities= role.getPermissions().stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.name())).collect(Collectors.toList());
+
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+
+        return authorities;
+
+          }
 
     @Override
     public @Nullable String getPassword() {
@@ -66,4 +80,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
+
 }

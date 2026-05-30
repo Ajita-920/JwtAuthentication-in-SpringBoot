@@ -3,14 +3,17 @@ package com.advancedjavabyajita.springsecurityjwt.controller;
 import com.advancedjavabyajita.springsecurityjwt.dto.AuthenticationRequestDto;
 import com.advancedjavabyajita.springsecurityjwt.dto.AuthenticationResponseDto;
 import com.advancedjavabyajita.springsecurityjwt.dto.RegisterRequestDto;
+import com.advancedjavabyajita.springsecurityjwt.dto.RegisterResponseDto;
 import com.advancedjavabyajita.springsecurityjwt.service.AuthenticationService;
+import com.advancedjavabyajita.springsecurityjwt.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 @RequestMapping("api/v1/auth")
 public class AuthenticationController {
 
@@ -22,12 +25,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDto> register(@RequestBody RegisterRequestDto request){
-      return ResponseEntity.ok(authenticationService.register(request));
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterRequestDto request){
+            RegisterResponseDto registerUser = authenticationService.register(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registerUser);
+        }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponseDto> login(@RequestBody AuthenticationRequestDto request) {
+        AuthenticationResponseDto authResponse = authenticationService.authenticate(request);
+        return ResponseEntity.ok(authResponse);
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseDto> register(@RequestBody AuthenticationRequestDto request){
-     return ResponseEntity.ok(authenticationService.authenticate(request));
-    }
+
 }

@@ -1,20 +1,16 @@
 package com.advancedjavabyajita.springsecurityjwt.dto;
 
 import com.advancedjavabyajita.springsecurityjwt.entity.Role;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AuthenticationResponseDto {
+public class RegisterResponseDto {
     private String firstname;
     private String lastname;
     private String email;
-    private String token;
-
     private Role role;
 }
